@@ -26,11 +26,8 @@
     $pdo = conectar();
 
     if (isset($codigo, $denominacion, $localidad, $fecha_alta)) {
-        if (!isset($_SESSION['_csrf']) || $_SESSION['_csrf'] != $_csrf) {
-            $_SESSION['error'] = 'Petición incorrecta.';
-            volver_departamentos();
-            return;
-        }
+        comparar_csrf($_csrf);
+
         $errores = [];
         comprobar_codigo($codigo, $errores, $pdo);
         comprobar_denominacion($denominacion, $errores, $pdo);
@@ -55,9 +52,8 @@
         }
     }
 
-    if (!isset($_SESSION['_csrf'])) {
-        $_SESSION['_csrf'] = bin2hex(random_bytes(32));
-    }
+    crear_csrf();
+    
     ?>
     <form action="" method="post">
         <input type="hidden" name="_csrf" value="<?= $_SESSION['_csrf'] ?>">

@@ -14,9 +14,11 @@
     $nombre = obtener_post('nombre');
     $apellidos = obtener_post('apellidos');
     $departamento_id = obtener_post('departamento_id');
+    $_csrf = obtener_post('_csrf');
     $pdo = conectar() or die("No se ha podido establecer una conexión");
 
     if (isset($numero, $nombre, $apellidos, $departamento_id)) {
+        comparar_csrf($_csrf);
         $errores = [];
         // comprobar_numero($numero, $errores, $pdo);
         // comprobar_nombre($nombre, $errores, $pdo);
@@ -42,21 +44,23 @@
     }
 
     cabecera();
+    crear_csrf();
     ?>
     <form action="" method="post">
+        <input type="hidden" name="_csrf" value="<?= $_SESSION['_csrf'] ?>">
         <label>
             Número:
-            <input type="text" name="numero" value="<?= $numero ?>">
+            <input type="text" name="numero" value="<?= hh($numero) ?>">
         </label>
         <br>
         <label>
             Nombre:
-            <input type="text" name="nombre" value="<?= $nombre ?>">
+            <input type="text" name="nombre" value="<?= hh($nombre) ?>">
         </label>
         <br>
         <label>
             Apellidos:
-            <input type="text" name="apellidos" value="<?= $apellidos ?>">
+            <input type="text" name="apellidos" value="<?= hh($apellidos) ?>">
         </label>
         <br>
         <label>
@@ -64,7 +68,7 @@
             <select name="departamento_id">
                 <option value="">(Ninguno)</option>
                 <?php foreach (departamentos() as $dep): ?>
-                    <option value="<?= $dep['id'] ?>">
+                    <option value="<?= hh($dep['id']) ?>">
                         <?= "({$dep['codigo']}) {$dep['denominacion']}" ?>
                     </option>
                 <?php endforeach ?>

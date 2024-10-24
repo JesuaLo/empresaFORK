@@ -12,7 +12,7 @@
 
     $id = obtener_get('id');
     $pdo = conectar();
-
+    
     if (!($fila = comprobar_id($id, $pdo))) {
         $_SESSION['error'] = 'Error al recuperar el departamento';
         volver_departamentos();
@@ -24,6 +24,13 @@
         $denominacion = obtener_post('denominacion');
         $localidad = obtener_post('localidad');
         $fecha_alta = obtener_post('fecha_alta');
+        $_csrf = obtener_post('_csrf');
+
+        if (!isset($_SESSION['_csrf']) || $_SESSION['_csrf'] != $_csrf) {
+            $_SESSION['error'] = 'Petición incorrecta.';
+            volver_departamentos();
+            return;
+        }
 
         if (isset($codigo, $denominacion, $localidad, $fecha_alta)) {
             $errores = [];
@@ -63,6 +70,7 @@
     cabecera();
     ?>
     <form action="" method="post">
+        <input type="hidden" name="_csrf" value="<?= $_SESSION['_csrf'] ?>">
         <label>
             Código:
             <input type="text" name="codigo" value="<?= hh($codigo) ?>">
